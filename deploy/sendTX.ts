@@ -9,7 +9,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { Deployer as ZkDeployer } from "@matterlabs/hardhat-zksync";
 
 // Used to access the ABI in case we just want to verify the contract
-const CONTRACT_ARTIFACT = require("../artifacts-zk/contracts/WBTC.sol/WBTC.json");
+// const CONTRACT_ARTIFACT = require("../artifacts-zk/contracts/MyERC20Token.sol/MyERC20Token.json");
 
 dotenv.config();
 
@@ -45,36 +45,18 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     const artifact = await l2Deployer.loadArtifact("WBTC");
     const constructorArguments: any[] = [];
 
-    // Address of the contract already deployed
-    const address = "0x8A4C5552ee1E96C195BADC7226e1D38F7CE9405b";
-    const l2Contract = new ethers.Contract(
-        address,
-        CONTRACT_ARTIFACT.abi,
-        l2Provider
-    );
+    // Connect to existing WBTC contract
+    const wbtcAddress = "0x8A4C5552ee1E96C195BADC7226e1D38F7CE9405b";
+    const wbtcContract = new ethers.Contract(wbtcAddress, artifact.abi, l2Wallet);
 
-    const constructorArgs =
-        l2Contract.interface.encodeDeploy(constructorArguments);
-    const fullContractSource = `${artifact.sourceName}:${artifact.contractName}`;
-
-    // Display contract deployment info
-    console.log(
-        `\n"${artifact.contractName}" : Preparing to request verification...`
-    );
-    console.log(` - Contract address: ${address}`);
-    console.log(` - Contract source: ${fullContractSource}`);
-    console.log(` - Encoded constructor arguments: ${constructorArgs}\n`);
-
-    console.log(`Requesting contract verification...`);
-    const verificationData = {
-        address,
-        contract: fullContractSource,
-        constructorArguments: constructorArgs,
-        bytecode: artifact.bytecode,
-    };
-    const verificationRequestId: number = await hre.run("verify:verify", {
-        ...verificationData,
-        noCompile: true,
+    // Prepare and send swap transaction
+    const amountToSwap = ethers.parseEther("0.01"); // Adjust amount as needed
+    const tx = await wbtcContract.swap({
+        value: amountToSwap  // Send ETH equal to amountToSwap
     });
-    console.log("Verification request id:", verificationRequestId);
+    console.log("Swap transaction hash:", tx.hash);
+    
+    // Wait for transaction confirmation
+    const receipt = await tx.wait();
+    console.log("Transaction confirmed in block:", receipt.blockNumber);
 }

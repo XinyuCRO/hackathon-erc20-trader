@@ -42,7 +42,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     const l2Deployer = new ZkDeployer(hre, l2Wallet);
 
     // Load contract
-    const artifact = await l2Deployer.loadArtifact("MyERC20Token");
+    const artifact = await l2Deployer.loadArtifact("WBTC");
     const constructorArguments: any[] = [];
 
     // BEGINNING OF DEPLOYMENT

@@ -9,7 +9,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { Deployer as ZkDeployer } from "@matterlabs/hardhat-zksync";
 
 // Used to access the ABI in case we just want to verify the contract
-const CONTRACT_ARTIFACT = require("../artifacts-zk/contracts/MyERC20Token.sol/MyERC20Token.json");
+const CONTRACT_ARTIFACT = require("../artifacts-zk/contracts/WBTC.sol/WBTC.json");
 
 dotenv.config();
 
@@ -42,7 +42,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     const l2Deployer = new ZkDeployer(hre, l2Wallet);
 
     // Load contract
-    const artifact = await l2Deployer.loadArtifact("MyERC20Token");
+    const artifact = await l2Deployer.loadArtifact("WBTC");
     const constructorArguments: any[] = [];
 
     // If the contract has already been deployed and we just need to verify it, uncomment the following lines and comment the deployment code below
